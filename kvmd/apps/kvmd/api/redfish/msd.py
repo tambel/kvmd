@@ -150,7 +150,7 @@ class RedfishMsdApi:
             logger.info(f"Downloaded. Image name: {name}")
         else:
 
-            name = valid_msd_image_name(image
+            name = valid_msd_image_name(image)
 
         cdrom = name.lower().startswith(".iso")
         connect = valid_bool(params.get("Inserted", True))
