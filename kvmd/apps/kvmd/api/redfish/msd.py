@@ -27,6 +27,8 @@ from pathlib import PurePosixPath
 from aiohttp.web import Request
 from aiohttp.web import Response
 
+from .....logging import get_logger
+
 from .....htserver import HttpError
 from .....htserver import exposed_http
 from .....htserver import make_json_response
@@ -131,7 +133,10 @@ class RedfishMsdApi:
             params = await req.json()
         except Exception:
             raise HttpError("Invalid body", 400)
+
+        get_logger(0).info("111111")
         image = valid_msd_image_name(params.get("Image"))
+        get_logger(0).info("222222")
 
         if is_http_url(image):
             await download_and_write_image(
