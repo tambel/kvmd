@@ -134,16 +134,19 @@ class RedfishMsdApi:
         except Exception:
             raise HttpError("Invalid body", 400)
 
-        get_logger(0).info("111111")
         image = valid_msd_image_name(params.get("Image"))
-        get_logger(0).info("222222")
+        logger = get_logger(0)
+
+        logger.info(f"Image: {image}")
 
         if is_http_url(image):
+            logger.info("Download image")
             await download_and_write_image(
                 name,
                 True,
             )
             name = PurePosixPath(urlparse(image).path).name
+            logger.info(f"Downloaded. Image name: {name}")
         else:
             name = image
 
