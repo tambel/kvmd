@@ -136,6 +136,13 @@ class RedfishAtxApi:
                 "BootSourceOverrideEnabled": "Disabled",
                 "BootSourceOverrideTarget": None,
             },
+            "Links": {
+                "ManagedBy": [
+                    {
+                        "@odata.id": "/redfish/v1/Managers/BMC"
+                    }
+                ]
+            }
         }, wrap_result=False)
 
     @exposed_http("PATCH", "/redfish/v1/Systems/{sid}")
