@@ -134,7 +134,7 @@ class RedfishMsdApi:
         image = valid_msd_image_name(params.get("Image"))
 
         if is_http_url(image):
-            download_and_write_image(
+            await download_and_write_image(
                 name,
                 True,
             )
@@ -173,7 +173,7 @@ def is_http_url(s: str) -> bool:
 
 
 
-def download_and_write_image(url: str, secure: bool, timeout: float = 60.0):
+async def download_and_write_image(url: str, secure: bool, timeout: float = 60.0):
 
     # async def stream_write_info() -> None:
     #     assert resp is not None
