@@ -164,14 +164,15 @@ backup=(
 )
 
 build() {
-	cd "$srcdir/kvmd-$pkgver"
+	#cd "$srcdir/kvmd-$pkgver"
+	cd "$srcdir/kvmd-redfish"
 	python -m build --wheel --no-isolation
 }
 
 package_kvmd() {
 	install=kvmd.install
 
-	cd "$srcdir/kvmd-$pkgver"
+	cd "$srcdir/kvmd-redfish"
 	python -m installer --destdir="$pkgdir" dist/*.whl
 
 	install -Dm755 -t "$pkgdir/usr/bin" scripts/kvmd-{bootconfig,gencert,certbot}
@@ -223,7 +224,7 @@ for _variant in "${_variants[@]}"; do
 	_base=${_platform%-*}
 	_video=${_platform#*-}
 	eval "package_kvmd-platform-$_platform-$_board() {
-		cd \"kvmd-$pkgver\"
+		cd \"kvmd-redfish\"
 
 		install=platform.install
 
