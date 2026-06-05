@@ -145,7 +145,7 @@ class RedfishMsdApi:
             logger.info("Download image")
             await download_and_write_image(
                 image,
-                True,
+                False,
             )
             name = PurePosixPath(urlparse(image).path).name
             logger.info(f"Downloaded. Image name: {name}")
@@ -184,7 +184,7 @@ def is_http_url(s: str) -> bool:
 
 
 
-async def download_and_write_image(url: str, secure: bool, timeout: float = 60.0):
+async def download_and_write_image(url: str, insecure: bool, timeout: float = 60.0):
 
     # async def stream_write_info() -> None:
     #     assert resp is not None
