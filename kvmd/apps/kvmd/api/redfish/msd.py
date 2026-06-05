@@ -143,7 +143,7 @@ class RedfishMsdApi:
         if is_http_url(image):
             logger.info("Download image")
             await download_and_write_image(
-                name,
+                image,
                 True,
             )
             name = PurePosixPath(urlparse(image).path).name
