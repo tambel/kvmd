@@ -150,7 +150,8 @@ makedepends=(
 	python-wheel
 	python-setuptools
 )
-source=("kvmd-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+#source=("kvmd-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+source=("kvmd-$pkgver.tar.gz::https://github.com/tambel/kvmd/archive/refs/heads/redfish.zip")
 md5sums=(SKIP)
 backup=(
 	etc/kvmd/{override,meta}.yaml
