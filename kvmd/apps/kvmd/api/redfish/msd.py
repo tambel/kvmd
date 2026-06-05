@@ -21,6 +21,8 @@
 
 
 import os
+from urllib.parse import urlparse
+from pathlib import PurePosixPath
 
 from aiohttp.web import Request
 from aiohttp.web import Response
@@ -33,6 +35,7 @@ from .....plugins.msd import BaseMsd
 
 from .....validators.basic import valid_bool
 from .....validators.kvm import valid_msd_image_name
+from .....validators.basic import valid_int_f0
 
 
 # =====
@@ -128,7 +131,17 @@ class RedfishMsdApi:
             params = await req.json()
         except Exception:
             raise HttpError("Invalid body", 400)
-        name = valid_msd_image_name(params.get("Image"))
+        image = valid_msd_image_name(params.get("Image"))
+
+        if is_http_url(image):
+            download_and_write_image(
+                name,
+                True,
+            )
+            name = PurePosixPath(urlparse(image).path).name
+        else:
+            name = image
+
         cdrom = name.lower().startswith(".iso")
         connect = valid_bool(params.get("Inserted", True))
         rw = (not valid_bool(params.get("WriteProtected", True)))
@@ -148,3 +161,59 @@ class RedfishMsdApi:
         await self.__msd.set_connected(False)
         await self.__msd.set_params(name="")
         return Response(body=None, status=204)
+
+
+def is_http_url(s: str) -> bool:
+    try:
+        result = urlparse(s)
+        return result.scheme in ("http", "https") and bool(result.netloc)
+    except Exception:
+        return False
+
+
+
+
+def download_and_write_image(url: str, secure: bool, timeout: float = 60.0):
+
+    # async def stream_write_info() -> None:
+    #     assert resp is not None
+    #     await stream_json(resp, self.__make_write_info(name, size, written))
+    #
+    # try:
+    async with htclient.download(
+        url=url,
+        verify=(not insecure),
+        timeout=timeout,
+        read_timeout=(7 * 24 * 3600),
+    ) as remote:
+
+        name = str(req.query.get("image", "")).strip()
+        if len(name) == 0:
+            name = htclient.get_filename(remote)
+        name = valid_msd_image_name(unsafe_prefix + name)
+
+        size = valid_int_f0(remote.content_length)
+
+        get_logger(0).info("Downloading image %r as %r to MSD ...", url, name)
+        async with self.__msd.write_image(name, size, remove_incomplete) as writer:
+            chunk_size = writer.get_chunk_size()
+            # resp = await start_streaming(req, "application/x-ndjson")
+            # await stream_write_info()
+            # last_report_ts = 0
+            async for chunk in remote.content.iter_chunked(chunk_size):
+                written = await writer.write_chunk(chunk)
+                # now = int(time.monotonic())
+                # if last_report_ts + 1 < now:
+                #     await stream_write_info()
+                #     last_report_ts = now
+
+        # await stream_write_info()
+        # return resp
+
+    # except Exception as ex:
+    #     if resp is not None:
+    #         await stream_write_info()
+    #         await stream_json_exception(resp, ex)
+    #     elif isinstance(ex, aiohttp.ClientError):
+    #         return make_json_exception(ex, 400)
+    #     raise
