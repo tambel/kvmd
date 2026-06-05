@@ -29,6 +29,7 @@ from aiohttp.web import Response
 
 from .....logging import get_logger
 
+from ..... import htclient
 from .....htserver import HttpError
 from .....htserver import exposed_http
 from .....htserver import make_json_response
