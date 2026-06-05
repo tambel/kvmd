@@ -134,8 +134,9 @@ class RedfishMsdApi:
         except Exception:
             raise HttpError("Invalid body", 400)
 
-        image = valid_msd_image_name(params.get("Image"))
         logger = get_logger(0)
+
+        image = params.get("Image")
 
         logger.info(f"Image: {image}")
 
@@ -148,7 +149,8 @@ class RedfishMsdApi:
             name = PurePosixPath(urlparse(image).path).name
             logger.info(f"Downloaded. Image name: {name}")
         else:
-            name = image
+
+            name = valid_msd_image_name(image
 
         cdrom = name.lower().startswith(".iso")
         connect = valid_bool(params.get("Inserted", True))
