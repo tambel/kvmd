@@ -152,6 +152,7 @@ class RedfishMsdApi:
                 image,
                 name,
                 False,
+                self.__msd,
             )
             logger.info(f"Downloaded. Image name: {name}")
         else:
@@ -189,7 +190,7 @@ def is_http_url(s: str) -> bool:
 
 
 
-async def download_and_write_image(url: str, name: str, insecure: bool, timeout: float = 60.0):
+async def download_and_write_image(url: str, name: str, insecure: bool, msd: BaseMsd, timeout: float = 60.0):
 
     # async def stream_write_info() -> None:
     #     assert resp is not None
@@ -208,7 +209,7 @@ async def download_and_write_image(url: str, name: str, insecure: bool, timeout:
 
         size = valid_int_f0(remote.content_length)
 
-        async with self.__msd.write_image(name, size, remove_incomplete) as writer:
+        async with msd.write_image(name, size, remove_incomplete) as writer:
             chunk_size = writer.get_chunk_size()
             # resp = await start_streaming(req, "application/x-ndjson")
             # await stream_write_info()
