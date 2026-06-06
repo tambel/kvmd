@@ -143,11 +143,15 @@ class RedfishMsdApi:
 
         if is_http_url(image):
             logger.info("Download image")
+
+            name = htclient.get_filename(remote)
+            #name = PurePosixPath(urlparse(image).path).name
+
+            logger.info("Downloading image %r as %r to MSD ...", image, name)
             await download_and_write_image(
                 image,
                 False,
             )
-            name = PurePosixPath(urlparse(image).path).name
             logger.info(f"Downloaded. Image name: {name}")
         else:
 
@@ -198,14 +202,11 @@ async def download_and_write_image(url: str, insecure: bool, timeout: float = 60
         read_timeout=(7 * 24 * 3600),
     ) as remote:
 
-        name = str(req.query.get("image", "")).strip()
-        if len(name) == 0:
-            name = htclient.get_filename(remote)
-        name = valid_msd_image_name(unsafe_prefix + name)
+        # if len(name) == 0:
+        # name = valid_msd_image_name(unsafe_prefix + name)
 
         size = valid_int_f0(remote.content_length)
 
-        get_logger(0).info("Downloading image %r as %r to MSD ...", url, name)
         async with self.__msd.write_image(name, size, remove_incomplete) as writer:
             chunk_size = writer.get_chunk_size()
             # resp = await start_streaming(req, "application/x-ndjson")
