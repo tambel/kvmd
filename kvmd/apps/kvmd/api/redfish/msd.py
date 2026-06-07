@@ -148,12 +148,16 @@ class RedfishMsdApi:
             name = PurePosixPath(urlparse(image).path).name
 
             logger.info("Downloading image %r as %r to MSD ...", image, name)
-            await download_and_write_image(
-                image,
-                name,
-                False,
-                self.__msd,
-            )
+            try:
+                await download_and_write_image(
+                    image,
+                    name,
+                    False,
+                    self.__msd,
+                )
+            except Exception as e:
+                logger.info(f"Download error: {e}")
+                return Response(body={"error": str(e)}, status=500)
             logger.info(f"Downloaded. Image name: {name}")
         else:
 
