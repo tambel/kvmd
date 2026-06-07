@@ -379,6 +379,7 @@ class HttpServer:
             sock=sock,
             app=self.__make_app(),
             shutdown_timeout=1,
+            keepalive_timeout=600,
             access_log_format=access_log_format,
             print=self.__run_app_print,
         )
