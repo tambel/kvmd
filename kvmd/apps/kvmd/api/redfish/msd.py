@@ -21,6 +21,7 @@
 
 
 import os
+import json
 from urllib.parse import urlparse
 from pathlib import PurePosixPath
 
@@ -156,8 +157,8 @@ class RedfishMsdApi:
                     self.__msd,
                 )
             except Exception as e:
-                logger.info(f"Download error: {e}")
-                return Response(body={"error": str(e)}, status=500)
+                logger.error(f"Download error: {e}")
+                return Response(body=json.dumps({"error": str(e)}).encode(), status=500)
             logger.info(f"Downloaded. Image name: {name}")
         else:
 
