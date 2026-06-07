@@ -24,6 +24,7 @@ import os
 import json
 from urllib.parse import urlparse
 from pathlib import PurePosixPath
+import asyncio
 
 from aiohttp.web import Request
 from aiohttp.web import Response
@@ -132,6 +133,9 @@ class RedfishMsdApi:
     @exposed_http("POST", "/redfish/v1/Managers/BMC/VirtualMedia/MSD/Actions/VirtualMedia.InsertMedia")
     async def __msd_insert_handler(self, req: Request) -> Response:
         try:
+
+            await asyncio.sleep(120)
+
             try:
                 params = await req.json()
             except Exception:
