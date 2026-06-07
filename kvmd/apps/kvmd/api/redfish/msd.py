@@ -190,7 +190,7 @@ def is_http_url(s: str) -> bool:
 
 
 
-async def download_and_write_image(url: str, name: str, insecure: bool, msd: BaseMsd, timeout: float = 60.0, remove_incomplete: bool = True):
+async def download_and_write_image(url: str, name: str, insecure: bool, msd: BaseMsd, timeout: float = 600.0, remove_incomplete: bool = True):
 
     # async def stream_write_info() -> None:
     #     assert resp is not None
