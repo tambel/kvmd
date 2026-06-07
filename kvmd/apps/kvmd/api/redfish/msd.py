@@ -132,51 +132,56 @@ class RedfishMsdApi:
     @exposed_http("POST", "/redfish/v1/Managers/BMC/VirtualMedia/MSD/Actions/VirtualMedia.InsertMedia")
     async def __msd_insert_handler(self, req: Request) -> Response:
         try:
-            params = await req.json()
-        except Exception:
-            raise HttpError("Invalid body", 400)
-
-        logger = get_logger(0)
-
-        image = params.get("Image")
-
-        logger.info(f"Image: {image}")
-
-        if is_http_url(image):
-            logger.info("Download image")
-
-            # name = htclient.get_filename(remote)
-            name = PurePosixPath(urlparse(image).path).name
-
-            logger.info("Downloading image %r as %r to MSD ...", image, name)
             try:
-                await download_and_write_image(
-                    image,
-                    name,
-                    False,
-                    self.__msd,
-                )
-            except Exception as e:
-                logger.error(f"Download error: {e}")
-                return Response(body=json.dumps({"error": str(e)}).encode(), status=500)
-            logger.info(f"Downloaded. Image name: {name}")
-        else:
+                params = await req.json()
+            except Exception:
+                raise HttpError("Invalid body", 400)
 
-            name = valid_msd_image_name(image)
+            logger = get_logger(0)
 
-        cdrom = name.lower().startswith(".iso")
-        connect = valid_bool(params.get("Inserted", True))
-        rw = (not valid_bool(params.get("WriteProtected", True)))
+            image = params.get("Image")
 
-        state = await self.__msd.get_state()
-        if state.get("drive", {}).get("connected"):
-            await self.__msd.set_connected(False)
-            await self.__msd.set_params(name="")
+            logger.info(f"Image: {image}")
 
-        await self.__msd.set_params(name=name, cdrom=cdrom, rw=rw)
-        if connect:
-            await self.__msd.set_connected(True)
-        return Response(body=None, status=204)
+            if is_http_url(image):
+                logger.info("Download image")
+
+                # name = htclient.get_filename(remote)
+                name = PurePosixPath(urlparse(image).path).name
+
+                logger.info("Downloading image %r as %r to MSD ...", image, name)
+                try:
+                    await download_and_write_image(
+                        image,
+                        name,
+                        False,
+                        self.__msd,
+                    )
+                except Exception as e:
+                    logger.error(f"Download error: {e}")
+                    return Response(body=json.dumps({"error": str(e)}).encode(), status=500)
+                logger.info(f"Downloaded. Image name: {name}")
+            else:
+
+                name = valid_msd_image_name(image)
+
+            cdrom = name.lower().startswith(".iso")
+            connect = valid_bool(params.get("Inserted", True))
+            rw = (not valid_bool(params.get("WriteProtected", True)))
+
+            state = await self.__msd.get_state()
+            if state.get("drive", {}).get("connected"):
+                await self.__msd.set_connected(False)
+                await self.__msd.set_params(name="")
+
+            await self.__msd.set_params(name=name, cdrom=cdrom, rw=rw)
+            if connect:
+                await self.__msd.set_connected(True)
+            return Response(body=None, status=204)
+        except Exception as e:
+            logger.error(f"INSERT ERRRO: {e}")
+            return Response(body=json.dumps({"error": str(e)}).encode(), status=504)
+
 
     @exposed_http("POST", "/redfish/v1/Managers/BMC/VirtualMedia/MSD/Actions/VirtualMedia.EjectMedia")
     async def __msd_eject_handler(self, _: Request) -> Response:
