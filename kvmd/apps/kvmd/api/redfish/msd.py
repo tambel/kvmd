@@ -183,6 +183,7 @@ class RedfishMsdApi:
                 await self.__msd.set_connected(True)
             return Response(body=None, status=204)
         except Exception as e:
+            logger = get_logger(0)
             logger.error(f"INSERT ERRRO: {e}")
             return Response(body=json.dumps({"error": str(e)}).encode(), status=504)
 
