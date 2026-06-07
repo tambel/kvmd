@@ -134,7 +134,7 @@ class RedfishMsdApi:
     async def __msd_insert_handler(self, req: Request) -> Response:
         try:
 
-            await asyncio.sleep(120)
+            # await asyncio.sleep(120)
 
             try:
                 params = await req.json()
